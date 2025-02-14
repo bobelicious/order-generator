@@ -51,7 +51,7 @@ services:
       - 8100:8100
     build:
       context: .
-      dockerfile: user-system-api/dockerfile
+      dockerfile: user-system-api/Dockerfile
     depends_on:
       - naming-server
       - project-db
@@ -72,7 +72,7 @@ services:
       - 8100:8100
     build:
       context: .
-      dockerfile: user-system-api/dockerfile
+      dockerfile: user-system-api/Dockerfile
     depends_on:
       - naming-server
       - project-db
