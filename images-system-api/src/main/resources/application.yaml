@@ -1,0 +1,27 @@
+server:
+  port: 8200
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      
+spring:
+  mvc:
+    log-resolved-exception: true
+  application:
+    name: images-system-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orders
+    username: postgres
+    password: 123
+  jpa:
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      enabled: true
+management:
+  observations:
+    annotations:
+      enabled: true

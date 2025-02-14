@@ -1,0 +1,18 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      
+spring:
+  application:
+    name: product-system-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orders
+    username: postgres
+    password: 123
+  jpa:
+    hibernate:
+      ddl-auto: update

@@ -1,0 +1,35 @@
+server:
+  port: 8765
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+
+        - id: users-system-api
+          uri: lb://users-system-api
+          predicates:
+          - Path=/api/v1/users/**
+
+        - id: images-system-api
+          uri: lb://images-system-api
+          predicates:
+          - Path=/api/v1/images/** 
+
+        - id: product-system-api
+          uri: lb://product-system-api
+          predicates:
+          - Path=/api/v1/products/**, /api/v1/store/**
+management:
+  tracing:
+    sampling:
+      probability: 1.0

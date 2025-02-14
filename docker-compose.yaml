@@ -1,0 +1,84 @@
+version: '3.4'
+
+services:
+
+  naming-server:
+    image: bobelicious/naming-server:latest
+    ports:
+      - 8761:8761
+    networks:
+      - augusto-network
+      
+  api-gateway:
+    image: bobelicious/api-gateway
+    ports:
+      - 8765:8765
+    depends_on:
+      - naming-server
+    environment:
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT:  http://zipkin-server:9411/api/v2/spans
+      MANAGEMENT.TRACING.ENABLE: 'true'
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+    networks:
+      - augusto-network
+
+  project-db:
+    image: postgres:16.6
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: postgres
+      POSTGRES_DB: orders
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    command: -p 5432
+    networks:
+      - augusto-network
+
+  product-service:
+    image: bobelicious/order-gen-product-service:latest
+    restart: always
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.APPLICATION.NAME: users-system-api
+      SPRING.DATASOURCE.URL: jdbc:postgresql://project-db:5432/orders?useSSL=false&enabledTLSProtocols=TLSv1.2
+      SPRING.JPA.PROPERTIES.HIBERNATE.DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING.DATASOURCE.PASSWORD: 123
+    ports:
+      - 8100:8100
+    build:
+      context: .
+      dockerfile: user-system-api/dockerfile
+    depends_on:
+      - naming-server
+      - project-db
+    networks:
+      - augusto-network
+      
+  user-service:
+    image: bobelicious/order-gen-user-service:latest
+    restart: always
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.APPLICATION.NAME: users-system-api
+      SPRING.DATASOURCE.URL: jdbc:postgresql://project-db:5432/orders?useSSL=false&enabledTLSProtocols=TLSv1.2
+      SPRING.JPA.PROPERTIES.HIBERNATE.DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING.DATASOURCE.PASSWORD: 123
+    ports:
+      - 8100:8100
+    build:
+      context: .
+      dockerfile: user-system-api/dockerfile
+    depends_on:
+      - naming-server
+      - project-db
+    networks:
+      - augusto-network
+
+networks:
+  augusto-network:
+    driver: bridge
