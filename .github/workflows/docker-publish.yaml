@@ -1,4 +1,4 @@
-name: Continuous Integration witg Github
+name: Continuous Integration with Github
 
 on: [push]
 
@@ -20,6 +20,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+
+      - name: Check Maven and Java
+        run: |
+          mvn -v
+          java -version
           
       - name: Build Eureka Naming Server Container Image
         working-directory: ./naming-server
@@ -32,33 +37,17 @@ jobs:
       - name: Build User Microservice Jar
         working-directory: ./user-system-api
         run: mvn clean package -DskipTests
-        
-      # - name: Build Auth  Microservice Jar
-      #   working-directory: ./auth-service
-      #   run: mvn clean package -DskipTests
-
-      # - name: Build User Consumer Microservice Jar
-      #   working-directory: ./user-consumer
-      #   run: mvn clean package -DskipTests
-        
 
       - name: Build Product Microservice Jar
         working-directory: ./product-system-api
         run: mvn clean package -DskipTests
 
-      # - name: Build Product Consumer Microservice Jar
-      #   working-directory: ./product-consumer
-      #   run: mvn clean package -DskipTests
+      - name: Check Docker and Docker Compose
+        run: |
+          docker --version
+          docker-compose --version
 
-      # - name: Build Address Microservice Jar
-      #   working-directory: ./address
-      #   run: mvn clean package -DskipTests
-
-      # - name: Build Address Consumer Microservice Jar
-      #   working-directory: ./address-consumer
-      #   run: mvn clean package -DskipTests
-
-      - name: Docker Composer Build
+      - name: Docker Compose Build
         working-directory: .
         run: docker-compose build
 
@@ -75,5 +64,3 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/user-system-api:${{github.run_id}}
           docker push ${{ secrets.DOCKER_USERNAME }}/user-system-api:latest
-          
-          
