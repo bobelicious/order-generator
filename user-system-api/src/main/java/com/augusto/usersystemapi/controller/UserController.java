@@ -26,6 +26,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return new ResponseEntity<String>("Up", HttpStatus.OK);
+    }
+
     @PostMapping("/new")
     public ResponseEntity<UserOutputDto> createUser(@RequestBody UserInputDto userInputDto) {
         return new ResponseEntity<UserOutputDto>(userService.createUser(userInputDto),
@@ -69,4 +74,3 @@ public class UserController {
         return new ResponseEntity<String>("Image update successful", HttpStatus.OK);
     }
 }
-
