@@ -58,10 +58,10 @@ jobs:
 
       - name: Push to Docker Hub Container Registry
         run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/naming-server:latest ${{ secrets.DOCKER_USERNAME }}/naming-server:${{github.run_id}}
-          docker tag ${{ secrets.DOCKER_USERNAME }}/naming-server:latest ${{ secrets.DOCKER_USERNAME }}/naming-server:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{github.run_id}}
-          docker tag ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/naming-server:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/naming-server:${{github.run_id}}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/naming-server:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/naming-server:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/api-gateway:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{github.run_id}}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/api-gateway:0.0.1-SNAPSHOT ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
           docker tag ${{ secrets.DOCKER_USERNAME }}/user-system-api:latest ${{ secrets.DOCKER_USERNAME }}/user-system-api:${{github.run_id}}
           docker push ${{ secrets.DOCKER_USERNAME }}/naming-server:${{github.run_id}}
           docker push ${{ secrets.DOCKER_USERNAME }}/naming-server:latest
