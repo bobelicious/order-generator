@@ -46,10 +46,10 @@ public class UserService {
 
     public UserOutputDto createUser(UserInputDto userInputDto, MultipartFile file) {
         var newUser = toUser(userInputDto);
-        callNewImgClient(newUser, file);
         var user = toUserOutputDto(
-                createAddress(userInputDto.getAddressInputDto(), userRepository.save(newUser))
-                        .getUser());
+            createAddress(userInputDto.addressInputDto(), userRepository.save(newUser))
+            .getUser());
+        callNewImgClient(newUser, file);
         return user;
     }
 
@@ -76,11 +76,11 @@ public class UserService {
     }
 
     public UserOutputDto updateUser(UserInputUpdateDto userInputUpdateDto) {
-        var user = userRepository.findByUserCode(userInputUpdateDto.getUserCode())
+        var user = userRepository.findByUserCode(userInputUpdateDto.userCode())
                 .orElseThrow(() -> new ResourceNotFoundException("find by code", "userCode",
-                        userInputUpdateDto.getUserCode()));
-        user.setEmail(userInputUpdateDto.getEmail());
-        user.setPhoneNumber(userInputUpdateDto.getPhoneNumber());
+                        userInputUpdateDto.userCode()));
+        user.setEmail(userInputUpdateDto.email());
+        user.setPhoneNumber(userInputUpdateDto.phoneNumber());
         return toUserOutputDto(userRepository.save(user));
     }
 
@@ -97,11 +97,11 @@ public class UserService {
     }
 
     private Address createAddress(AddressInputDto adrsDto, User user) {
-        Optional<AddressViaCepDto> viaCepAdrs = Optional.ofNullable(viaCepClient.getAddress(adrsDto.getCep()));
+        Optional<AddressViaCepDto> viaCepAdrs = Optional.ofNullable(viaCepClient.getAddress(adrsDto.cep()));
         if (viaCepAdrs.isEmpty()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Endereco invalido");
         }
-        var adrs = new Address(viaCepAdrs.get(), adrsDto.getHouseNumber(), user, adrsDto.getType());
+        var adrs = new Address(viaCepAdrs.get(), adrsDto.houseNumber(), user, adrsDto.type());
         addressRepository.save(adrs);
         return adrs;
     }

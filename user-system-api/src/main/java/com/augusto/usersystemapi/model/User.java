@@ -44,10 +44,10 @@ public class User {
     private boolean deleted = false;
 
     public User(UserInputDto userInputDto, String userCode) {
-        this.name = userInputDto.getName();
-        this.email = userInputDto.getEmail();
-        this.cpf = userInputDto.getCpf();
-        this.phoneNumber = userInputDto.getPhoneNumber();
+        this.name = userInputDto.name();
+        this.email = userInputDto.email();
+        this.cpf = userInputDto.cpf();
+        this.phoneNumber = userInputDto.phoneNumber();
         this.userCode = userCode;
     }
 

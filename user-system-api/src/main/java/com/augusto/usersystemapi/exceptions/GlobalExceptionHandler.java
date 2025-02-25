@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,11 +21,24 @@ import com.augusto.usersystemapi.dtos.ErrorDetails;
 
 import feign.FeignException;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(UserException.class)
   public ResponseEntity<ErrorDetails> handleGlobal(UserException exception, WebRequest webRequest) {
+    ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
+        webRequest.getDescription(false));
+    return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<ErrorDetails> handleGlobal(RuntimeException exception, WebRequest webRequest) {
+    ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
+        webRequest.getDescription(false));
+    return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorDetails> handleGlobal(DataIntegrityViolationException exception, WebRequest webRequest) {
     ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
         webRequest.getDescription(false));
     return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
@@ -36,6 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         webRequest.getDescription(false));
     return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
   }
+
   @ExceptionHandler(FeignException.class)
   public ResponseEntity<ErrorDetails> handleGlobal(FeignException exception, WebRequest webRequest) {
     ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
@@ -46,7 +61,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   @Nullable
   @SuppressWarnings("null")
-  protected ResponseEntity<Object> handleMethodArgumentNotValid( MethodArgumentNotValidException ex,
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     Map<String, String> errors = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {

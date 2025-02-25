@@ -21,7 +21,7 @@ public class ImageService {
   private ImageDetailsRepository imageDetailsRepository;
 
   public void newImage(ImageInsertDto imageDto, MultipartFile file) {
-    var imageName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename() + ".png";
+    var imageName = UUID.randomUUID().toString() + ".png";
     var path = "D://aa_JAVA/images/%s/%s".formatted(imageDto.origin(), imageName);
     var imagefile = new File(path);
     System.out.println(imagefile);

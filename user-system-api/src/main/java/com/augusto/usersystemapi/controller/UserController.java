@@ -20,6 +20,8 @@ import com.augusto.usersystemapi.dtos.UserInputUpdateDto;
 import com.augusto.usersystemapi.dtos.UserOutputDto;
 import com.augusto.usersystemapi.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -38,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/new/photo")
-    public ResponseEntity<UserOutputDto> createUser(@RequestPart("user") UserInputDto userInputDto,
+    public ResponseEntity<UserOutputDto> createUser(@RequestPart("user") @Valid UserInputDto userInputDto,
             @RequestParam(name = "photoFile") MultipartFile file) {
         return new ResponseEntity<UserOutputDto>(userService.createUser(userInputDto, file),
                 HttpStatus.CREATED);
