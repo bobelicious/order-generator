@@ -12,9 +12,11 @@ spring:
   mvc:
     log-request-details: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/orders
+    driver-class-name: org.postgresql.Driver
+    # url: jdbc:postgresql://terraform-20250220174117442300000001.cvm02qq6cdnp.sa-east-1.rds.amazonaws.com/order_gen
+    url: ${JDBC_URL}
     username: postgres
-    password: 123
+    password: Ygbm!MEPn3rZp%4!09F*
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,3 +24,6 @@ management:
   observations:
     annotations:
       enabled: true
+logging:
+  level:
+    root: WARN

@@ -10,9 +10,12 @@ spring:
   application:
     name: product-system-api
   datasource:
-    url: jdbc:postgresql://localhost:5432/orders
+    url: ${JDBC_URL}
     username: postgres
-    password: 123
+    password: Ygbm!MEPn3rZp%4!09F*
   jpa:
     hibernate:
       ddl-auto: update
+logging:
+  level:
+    root: WARN

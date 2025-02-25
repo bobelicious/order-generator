@@ -35,7 +35,7 @@ public class User {
     @Column(name = "cpf", unique = true)
     private String cpf;
     @Column(name = "numero_telefone")
-    private int phoneNumber;
+    private String phoneNumber;
     @Column(name = "codigo_usuario", unique = true)
     private String userCode;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -44,10 +44,10 @@ public class User {
     private boolean deleted = false;
 
     public User(UserInputDto userInputDto, String userCode) {
-        this.name = userInputDto.name();
-        this.email = userInputDto.email();
-        this.cpf = userInputDto.cpf();
-        this.phoneNumber = userInputDto.phoneNumber();
+        this.name = userInputDto.getName();
+        this.email = userInputDto.getEmail();
+        this.cpf = userInputDto.getCpf();
+        this.phoneNumber = userInputDto.getPhoneNumber();
         this.userCode = userCode;
     }
 

@@ -48,7 +48,7 @@ public class UserService {
         var newUser = toUser(userInputDto);
         callNewImgClient(newUser, file);
         var user = toUserOutputDto(
-                createAddress(userInputDto.addressInputDto(), userRepository.save(newUser))
+                createAddress(userInputDto.getAddressInputDto(), userRepository.save(newUser))
                         .getUser());
         return user;
     }
@@ -76,11 +76,11 @@ public class UserService {
     }
 
     public UserOutputDto updateUser(UserInputUpdateDto userInputUpdateDto) {
-        var user = userRepository.findByUserCode(userInputUpdateDto.userCode())
+        var user = userRepository.findByUserCode(userInputUpdateDto.getUserCode())
                 .orElseThrow(() -> new ResourceNotFoundException("find by code", "userCode",
-                        userInputUpdateDto.userCode()));
-        user.setEmail(userInputUpdateDto.email());
-        user.setPhoneNumber(userInputUpdateDto.phoneNumber());
+                        userInputUpdateDto.getUserCode()));
+        user.setEmail(userInputUpdateDto.getEmail());
+        user.setPhoneNumber(userInputUpdateDto.getPhoneNumber());
         return toUserOutputDto(userRepository.save(user));
     }
 
@@ -97,11 +97,11 @@ public class UserService {
     }
 
     private Address createAddress(AddressInputDto adrsDto, User user) {
-        Optional<AddressViaCepDto> viaCepAdrs = Optional.ofNullable(viaCepClient.getAddress(adrsDto.cep()));
+        Optional<AddressViaCepDto> viaCepAdrs = Optional.ofNullable(viaCepClient.getAddress(adrsDto.getCep()));
         if (viaCepAdrs.isEmpty()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Endereco invalido");
         }
-        var adrs = new Address(viaCepAdrs.get(), adrsDto.houseNumber(), user, adrsDto.type());
+        var adrs = new Address(viaCepAdrs.get(), adrsDto.getHouseNumber(), user, adrsDto.getType());
         addressRepository.save(adrs);
         return adrs;
     }

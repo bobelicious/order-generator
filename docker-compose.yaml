@@ -48,7 +48,7 @@ services:
       SPRING.DATASOURCE.USERNAME: postgres
       SPRING.DATASOURCE.PASSWORD: 123
     ports:
-      - 8100:8100
+      - 8200:8200
     build:
       context: .
       dockerfile: user-system-api/Dockerfile
