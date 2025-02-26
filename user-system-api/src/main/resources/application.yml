@@ -13,7 +13,7 @@ spring:
     log-request-details: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    # url: jdbc:postgresql://terraform-20250220174117442300000001.cvm02qq6cdnp.sa-east-1.rds.amazonaws.com/order_gen
+    # url: jdbc:postgresql://terraform-20250226131959431600000001.cvm02qq6cdnp.sa-east-1.rds.amazonaws.com/order_gen
     url: ${JDBC_URL}
     username: postgres
     password: Ygbm!MEPn3rZp%4!09F*

@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.augusto.usersystemapi.client.FileUploadServiceClient;
 import com.augusto.usersystemapi.client.ViaCepClient;
 import com.augusto.usersystemapi.dtos.AddressInputDto;
+import com.augusto.usersystemapi.dtos.AddressOutputDto;
 import com.augusto.usersystemapi.dtos.AddressViaCepDto;
 import com.augusto.usersystemapi.dtos.ImageInsertDto;
 import com.augusto.usersystemapi.dtos.UserInputDto;
@@ -47,8 +48,8 @@ public class UserService {
     public UserOutputDto createUser(UserInputDto userInputDto, MultipartFile file) {
         var newUser = toUser(userInputDto);
         var user = toUserOutputDto(
-            createAddress(userInputDto.addressInputDto(), userRepository.save(newUser))
-            .getUser());
+                createAddress(userInputDto.addressInputDto(), userRepository.save(newUser))
+                        .getUser());
         callNewImgClient(newUser, file);
         return user;
     }
@@ -71,27 +72,23 @@ public class UserService {
     }
 
     public UserOutputDto findByCode(String code) {
-        return toUserOutputDto(userRepository.findByUserCode(code).orElseThrow(
-                () -> new ResourceNotFoundException("find by code", "userCode", code)));
+        return toUserOutputDto(findUser(code));
     }
 
-    public UserOutputDto updateUser(UserInputUpdateDto userInputUpdateDto) {
-        var user = userRepository.findByUserCode(userInputUpdateDto.userCode())
-                .orElseThrow(() -> new ResourceNotFoundException("find by code", "userCode",
-                        userInputUpdateDto.userCode()));
-        user.setEmail(userInputUpdateDto.email());
-        user.setPhoneNumber(userInputUpdateDto.phoneNumber());
+    public UserOutputDto updateUser(UserInputUpdateDto userDto) {
+        var user = findUser(userDto.userCode());
+        user.setEmail(userDto.email() == null ? user.getEmail() : userDto.email());
+        user.setPhoneNumber(userDto.phoneNumber() == null ? user.getEmail() : userDto.phoneNumber());
         return toUserOutputDto(userRepository.save(user));
     }
 
     public void updateUserImage(MultipartFile file, String code) {
-        findByCode(code);
+        findUser(code);
         fileClient.updateImage(code, file);
     }
 
     public void deleteUser(String userCode) {
-        var user = userRepository.findByUserCode(userCode)
-                .orElseThrow(() -> new ResourceNotFoundException("find by code", "userCode", userCode));
+        var user = findUser(userCode);
         user.setDeleted(true);
         userRepository.save(user);
     }
@@ -106,13 +103,21 @@ public class UserService {
         return adrs;
     }
 
+    private User findUser(String userCode) {
+        return userRepository.findByUserCode(userCode).orElseThrow(
+                () -> new ResourceNotFoundException("find by code", "userCode", userCode));
+    }
+
     private User toUser(UserInputDto userInputDto) {
         var user = new User(userInputDto, UUID.randomUUID().toString());
         return user;
     }
 
     private UserOutputDto toUserOutputDto(User user) {
+        var addresses = user.getAddresses().stream()
+                .map((address) -> new AddressOutputDto(address.getCep(), address.getStreet(), address.getNeighborhood(),
+                        address.getCity(), address.getUf(), address.getHouseNumber())).toList();
         return new UserOutputDto(user.getName(), user.getEmail(), user.getPhoneNumber(),
-                user.getUserCode());
+                user.getUserCode(), addresses);
     }
 }
