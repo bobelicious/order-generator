@@ -30,7 +30,8 @@
             "mainClass": "com.augusto.apigateway.ApiGatewayApplication",
             "projectName": "api-gateway",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -49,6 +50,17 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.augusto.images_system_api.ImagesSystemApiApplication",
             "projectName": "images-system-api",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-OrderGenAuthApplication<order_gen_auth>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.augusto.order_gen_auth.OrderGenAuthApplication",
+            "projectName": "order_gen_auth",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

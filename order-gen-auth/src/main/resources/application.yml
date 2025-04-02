@@ -1,6 +1,11 @@
 server:
-  port: 8100
+  port: 8300
 
+security:
+  jwt:
+    token:
+      secret-key: 01954899803d717bb3c65953d33a662c
+      expire-lenght: 3600000
 eureka:
   client:
     service-url:
@@ -8,13 +13,13 @@ eureka:
 
 spring:
   application:
-    name: users-system-api
+    name: order-gen-auth
   mvc:
     log-request-details: true
   datasource:
-    driver-class-name: org.postgresql.Driver
+    # driver-class-name: org.postgresql.Driver
     # url: jdbc:postgresql://terraform-20250226131959431600000001.cvm02qq6cdnp.sa-east-1.rds.amazonaws.com/order_gen
-    url: ${JDBC_URL}
+    url: jdbc:postgresql://localhost:5432/order_gen
     username: postgres
     password: 123
   jpa:
@@ -27,3 +32,4 @@ management:
 logging:
   level:
     root: WARN
+

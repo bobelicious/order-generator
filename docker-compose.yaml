@@ -26,7 +26,9 @@ services:
     image: postgres:16.6
     restart: always
     environment:
-      POSTGRES_PASSWORD: 123
+      POSTGRES_    url: ${JDBC_URL}
+    username: postgres
+    password: Ygbm!MEPn3rZp%4!09F*
       POSTGRES_USER: postgres
       POSTGRES_DB: orders
     ports:
@@ -46,7 +48,9 @@ services:
       SPRING.DATASOURCE.URL: jdbc:postgresql://project-db:5432/orders?useSSL=false&enabledTLSProtocols=TLSv1.2
       SPRING.JPA.PROPERTIES.HIBERNATE.DIALECT: org.hibernate.dialect.PostgreSQLDialect
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING.DATASOURCE.PASSWORD: 123
+      SPRING.DATASOURCE.    url: ${JDBC_URL}
+    username: postgres
+    password: Ygbm!MEPn3rZp%4!09F*
     ports:
       - 8200:8200
     build:
@@ -67,7 +71,9 @@ services:
       SPRING.DATASOURCE.URL: jdbc:postgresql://project-db:5432/orders?useSSL=false&enabledTLSProtocols=TLSv1.2
       SPRING.JPA.PROPERTIES.HIBERNATE.DIALECT: org.hibernate.dialect.PostgreSQLDialect
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING.DATASOURCE.PASSWORD: 123
+      SPRING.DATASOURCE.    url: ${JDBC_URL}
+    username: postgres
+    password: Ygbm!MEPn3rZp%4!09F*
     ports:
       - 8100:8100
     build:
