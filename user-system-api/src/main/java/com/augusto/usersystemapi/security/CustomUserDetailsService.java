@@ -1,4 +1,4 @@
-package com.augusto.order_gen_auth.security;
+package com.augusto.usersystemapi.security;
 
 import java.util.stream.Collectors;
 
@@ -10,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.augusto.order_gen_auth.repository.UserRepository;
+import com.augusto.usersystemapi.repository.UserRepository;
+
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired

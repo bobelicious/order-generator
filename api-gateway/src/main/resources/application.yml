@@ -15,10 +15,20 @@ spring:
           enabled: true
       routes:
 
+        - id: ordergen-config-server
+          uri: lb://ordergen-config-server
+          predicates:
+          - Path=/api/v1/config/**
+
         - id: users-system-api
           uri: lb://users-system-api
           predicates:
           - Path=/api/v1/users/**
+
+        - id: order-gen-auth
+          uri: lb://order-gen-auth
+          predicates:
+          - Path=/api/v1/auth/**
 
         - id: images-system-api
           uri: lb://images-system-api

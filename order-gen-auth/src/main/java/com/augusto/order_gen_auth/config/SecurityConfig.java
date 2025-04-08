@@ -39,6 +39,7 @@ public class SecurityConfig {
         }
     }
 
+    @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         JwtTokenFilter customFilter = new JwtTokenFilter(tokenProvider);
         return httpSecurity.httpBasic(AbstractHttpConfigurer::disable)
@@ -48,8 +49,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorizeHttpRequests -> authorizeHttpRequests
                                 .requestMatchers(
-                                        "/auth/signin",
-                                        "/auth/signin/**",
+                                        "/api/v1/auth",
+                                        "/api/v1/auth/**",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**")
                                 .permitAll()

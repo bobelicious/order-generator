@@ -1,29 +1,44 @@
-server:
-  port: 8100
+# server:
+#   port: 8100
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
+# eureka:
+#   client:
+#     service-url:
+#       defaultZone: http://localhost:8761/eureka
 
+# spring:
+#   application:
+#     name: users-system-api
+#   mvc:
+#     log-request-details: true
+#   datasource:
+#     driver-class-name: org.postgresql.Driver
+#     # url: jdbc:postgresql://terraform-20250226131959431600000001.cvm02qq6cdnp.sa-east-1.rds.amazonaws.com/order_gen
+#     url: ${JDBC_URL}
+#     username: postgres
+#     password: 123
+#   jpa:
+#     hibernate:
+#       ddl-auto: update
+# management:
+#   observations:
+#     annotations:
+#       enabled: true
+# logging:
+#   level:
+#     root: WARN
 spring:
   application:
-    name: users-system-api
-  mvc:
-    log-request-details: true
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    # url: jdbc:postgresql://terraform-20250226131959431600000001.cvm02qq6cdnp.sa-east-1.rds.amazonaws.com/order_gen
-    url: ${JDBC_URL}
-    username: postgres
-    password: 123
-  jpa:
-    hibernate:
-      ddl-auto: update
+    name: user-system-api
+  config:
+    import: optional:configserver:http://localhost:8765/api/v1/config
+  cloud:
+    config:
+      profile: dev
+
 management:
-  observations:
-    annotations:
-      enabled: true
-logging:
-  level:
-    root: WARN
+  endpoints:
+    web:
+      exposure:
+        include:
+        - refresh

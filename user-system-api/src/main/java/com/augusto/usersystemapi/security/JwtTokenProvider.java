@@ -1,8 +1,7 @@
-package com.augusto.order_gen_auth.security;
+package com.augusto.usersystemapi.security;
 
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.augusto.order_gen_auth.dto.TokenDto;
-import com.augusto.order_gen_auth.exceptions.AuthException;
+import com.augusto.usersystemapi.exceptions.UserException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -38,41 +35,6 @@ public class JwtTokenProvider {
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         algorithm = Algorithm.HMAC256(secretKey.getBytes());
-    }
-
-    public TokenDto createAccessToken(String username, List<String> roles) {
-        var now = new Date();
-        var validity = new Date(now.getTime() + expirationInMillisecs);
-        var accessToken = getAccessToken(username, roles, now, validity);
-        var refreshToken = getRefreshToken(username, roles, now);
-        return new TokenDto(username, true, now, validity, accessToken, refreshToken);
-    }
-
-    public TokenDto refreshToken (String refreshToken ){
-        var token = getTokenFromBearer(refreshToken);
-        var verifier = JWT.require(algorithm).build();
-        var decodedJwt = verifier.verify(token);
-        return createAccessToken(decodedJwt.getSubject(), decodedJwt.getClaim("roles").asList(String.class));
-    }
-
-    private String getTokenFromBearer(String bearerToken) {
-        if (StringUtils.isNotBlank(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring("Bearer ".length());
-        }
-        throw new AuthException(HttpStatus.UNAUTHORIZED, "Invalid Refresh Token");
-    }
-
-    private String getAccessToken(String username, List<String> roles, Date now, Date validity) {
-        var issueUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-        return JWT.create().withClaim("roles", roles).withIssuedAt(now).withExpiresAt(validity).withSubject(username)
-                .withIssuer(issueUrl).sign(algorithm).toString();
-    }
-
-    private String getRefreshToken(String username, List<String> roles, Date now) {
-        var refreshValidity = new Date(now.getTime() + expirationInMillisecs);
-        return JWT.create().withClaim("roles", roles).withIssuedAt(now).withExpiresAt(refreshValidity)
-                .withSubject(username)
-                .sign(algorithm).toString();
     }
 
     public Authentication getAuth(String token) {
@@ -102,7 +64,7 @@ public class JwtTokenProvider {
             return decodedJwt.getExpiresAt().before(new Date()) ? false : true;
 
         } catch (Exception e) {
-            throw new AuthException(HttpStatus.UNAUTHORIZED, "Expired token");
+            throw new UserException(HttpStatus.UNAUTHORIZED, "Expired token");
         }
     }
 }

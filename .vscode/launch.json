@@ -63,6 +63,16 @@
             "projectName": "order_gen_auth",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-OrdergenConfigServerApplication<ordergen-config-server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.augusto.ordergen_config_server.OrdergenConfigServerApplication",
+            "projectName": "ordergen-config-server",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

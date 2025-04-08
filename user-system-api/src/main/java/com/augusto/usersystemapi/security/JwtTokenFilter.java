@@ -1,4 +1,4 @@
-package com.augusto.order_gen_auth.security;
+package com.augusto.usersystemapi.security;
 
 import java.io.IOException;
 
