@@ -1,13 +1,12 @@
 package com.augusto.productsystemapi.model;
 
 import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +33,8 @@ public class Product {
     private Float price;
     @Column(name = "codigo_produto", nullable = false, unique = true)
     private String code;
-    @ManyToOne
-    @JoinColumn(name = "cd_estabelecimento")
-    private Store store;
+    @ Column(name = "cnpj_restaurante", nullable = false)
+    private String cnpjOwner;
+    @Column(name = "descricao", nullable = false)
+    private String description;
 }

@@ -4,7 +4,11 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-
+security:
+  jwt:
+    token:
+      secret-key: 01954899803d717bb3c65953d33a662c
+      expire-lenght: 3600000
 spring:
   application:
     name: api-gateway
@@ -23,7 +27,7 @@ spring:
         - id: users-system-api
           uri: lb://users-system-api
           predicates:
-          - Path=/api/v1/users/**
+          - Path=/api/v1/users/**, /api/v1/business/**
 
         - id: order-gen-auth
           uri: lb://order-gen-auth

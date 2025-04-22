@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.augusto.usersystemapi.dtos.UserInputDto;
+import com.augusto.usersystemapi.dtos.user.UserInputDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -8,5 +8,7 @@ public record ProductOutputDto(
         List<String> updatedDate,
         int quantity,
         String code,
-        Float price
+        Float price,
+        String cnpjOwner,
+        String description
     ) {}

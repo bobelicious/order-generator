@@ -1,6 +1,7 @@
 package com.augusto.usersystemapi.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.augusto.usersystemapi.dtos.UserInputDto;
-import com.augusto.usersystemapi.dtos.UserInputUpdateDto;
-import com.augusto.usersystemapi.dtos.UserOutputDto;
+
+import com.augusto.usersystemapi.dtos.user.UserInputDto;
+import com.augusto.usersystemapi.dtos.user.UserInputUpdateDto;
+import com.augusto.usersystemapi.dtos.user.UserOutputDto;
 import com.augusto.usersystemapi.service.UserService;
 
 import jakarta.validation.Valid;
@@ -35,17 +37,24 @@ public class UserController {
         return new ResponseEntity<String>("Up", HttpStatus.OK);
     }
 
-    @PostMapping("/new")
-    public ResponseEntity<UserOutputDto> createUser(@RequestBody UserInputDto userInputDto) {
-        return new ResponseEntity<UserOutputDto>(userService.createUser(userInputDto),
-                HttpStatus.CREATED);
-    }
+    // @PostMapping("/new")
+    // public ResponseEntity<UserOutputDto> createUser(@RequestBody UserInputDto
+    // userInputDto) {
+    // return new
+    // ResponseEntity<UserOutputDto>(userService.createUser(userInputDto),
+    // HttpStatus.CREATED);
+    // }
 
-    @PostMapping("/new/photo")
+    @PostMapping("/new")
     public ResponseEntity<UserOutputDto> createUser(@RequestPart("user") @Valid UserInputDto userInputDto,
-            @RequestParam(name = "photoFile") MultipartFile file) {
-        return new ResponseEntity<UserOutputDto>(userService.createUser(userInputDto, file),
-                HttpStatus.CREATED);
+            @RequestParam(name = "photoFile", required = false) MultipartFile file) {
+        if (file == null) {
+            return new ResponseEntity<UserOutputDto>(userService.createUser(userInputDto),
+                    HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<UserOutputDto>(userService.createUser(userInputDto, file),
+                    HttpStatus.CREATED);
+        }
     }
 
     @GetMapping()

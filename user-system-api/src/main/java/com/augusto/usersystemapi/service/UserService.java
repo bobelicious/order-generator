@@ -9,25 +9,27 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.augusto.usersystemapi.client.FileUploadServiceClient;
 import com.augusto.usersystemapi.client.ViaCepClient;
-import com.augusto.usersystemapi.dtos.AddressInputDto;
-import com.augusto.usersystemapi.dtos.AddressOutputDto;
-import com.augusto.usersystemapi.dtos.AddressViaCepDto;
 import com.augusto.usersystemapi.dtos.ImageInsertDto;
-import com.augusto.usersystemapi.dtos.UserInputDto;
-import com.augusto.usersystemapi.dtos.UserInputUpdateDto;
-import com.augusto.usersystemapi.dtos.UserOutputDto;
+import com.augusto.usersystemapi.dtos.address.AddressInputDto;
+import com.augusto.usersystemapi.dtos.address.AddressOutputDto;
+import com.augusto.usersystemapi.dtos.address.AddressViaCepDto;
+import com.augusto.usersystemapi.dtos.user.UserInputDto;
+import com.augusto.usersystemapi.dtos.user.UserInputUpdateDto;
+import com.augusto.usersystemapi.dtos.user.UserOutputDto;
 import com.augusto.usersystemapi.exceptions.ResourceNotFoundException;
 import com.augusto.usersystemapi.exceptions.UserException;
 import com.augusto.usersystemapi.model.Address;
 import com.augusto.usersystemapi.model.Role;
 import com.augusto.usersystemapi.model.User;
-import com.augusto.usersystemapi.repository.AddressRepository;
 import com.augusto.usersystemapi.repository.RoleRepository;
 import com.augusto.usersystemapi.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,8 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private AddressRepository addressRepository;
     @Autowired
     private FileUploadServiceClient fileClient;
     @Autowired
@@ -50,18 +50,25 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Transactional
     public UserOutputDto createUser(UserInputDto userInputDto) {
         var newUser = toUser(userInputDto);
-        return toUserOutputDto(userRepository.save(newUser));
+        newUser.setPassword(encoder.encode(userInputDto.password()));
+        newUser.setRoles(setUserRole(userInputDto.role()));
+        var address = getFromViaCep(userInputDto.addressInputDto());
+        newUser.getAddresses().add(address);
+        var user = toUserOutputDto(userRepository.save(newUser));
+        return user;
     }
 
+    @Transactional
     public UserOutputDto createUser(UserInputDto userInputDto, MultipartFile file) {
         var newUser = toUser(userInputDto);
         newUser.setPassword(encoder.encode(userInputDto.password()));
         newUser.setRoles(setUserRole(userInputDto.role()));
-        var user = toUserOutputDto(
-                createAddress(userInputDto.addressInputDto(), userRepository.save(newUser))
-                        .getUser());
+        var address = getFromViaCep(userInputDto.addressInputDto());
+        newUser.getAddresses().add(address);
+        var user = toUserOutputDto(userRepository.save(newUser));
         callNewImgClient(newUser, file);
         return user;
     }
@@ -94,32 +101,56 @@ public class UserService {
         return toUserOutputDto(findUser(code));
     }
 
+    @Transactional
     public UserOutputDto updateUser(UserInputUpdateDto userDto) {
         var user = findUser(userDto.userCode());
+        validateUser(user.getId());
         user.setEmail(userDto.email() == null ? user.getEmail() : userDto.email());
         user.setPhoneNumber(userDto.phoneNumber() == null ? user.getEmail() : userDto.phoneNumber());
         return toUserOutputDto(userRepository.save(user));
     }
 
+    @Transactional
     public void updateUserImage(MultipartFile file, String code) {
-        findUser(code);
+        var user = findUser(code);
+        validateUser(user.getId());
         fileClient.updateImage(code, file);
     }
 
+    @Transactional
     public void deleteUser(String userCode) {
         var user = findUser(userCode);
         user.setDeleted(true);
         userRepository.save(user);
     }
 
-    private Address createAddress(AddressInputDto adrsDto, User user) {
+    private Address getFromViaCep(AddressInputDto adrsDto) {
         Optional<AddressViaCepDto> viaCepAdrs = Optional.ofNullable(viaCepClient.getAddress(adrsDto.cep()));
         if (viaCepAdrs.isEmpty()) {
             throw new UserException(HttpStatus.BAD_REQUEST, "Endereco invalido");
         }
-        var adrs = new Address(viaCepAdrs.get(), adrsDto.houseNumber(), user, adrsDto.type());
-        addressRepository.save(adrs);
+        var adrs = new Address(viaCepAdrs.get(), adrsDto.houseNumber(), adrsDto.type());
         return adrs;
+    }
+
+    private void validateUser(Long id) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userDetails = (UserDetails) authentication.getPrincipal();
+        var userLogedId = userDetails.getUsername();
+        var user = userRepository.findByEmailOrCpfOrUserNameAndDeletedFalse(userLogedId, userLogedId, userLogedId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", userLogedId));
+        if (user.getId() != id) {
+            throw new UserException(HttpStatus.UNAUTHORIZED, "You can't change other user data");
+        }
+    }
+    
+    public User getUserFromToken(){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userDetails = (UserDetails) authentication.getPrincipal();
+        var userLogedId = userDetails.getUsername();
+        var user = userRepository.findByEmailOrCpfOrUserNameAndDeletedFalse(userLogedId, userLogedId, userLogedId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", userLogedId));
+        return user;
     }
 
     private User findUser(String userCode) {
@@ -143,8 +174,8 @@ public class UserService {
                 user.getEmail(),
                 user.getPhoneNumber(),
                 user.getUserCode(),
+                user.getUserName(),
                 addresses,
-                roles,
-                user.getUserName());
+                roles);
     }
 }

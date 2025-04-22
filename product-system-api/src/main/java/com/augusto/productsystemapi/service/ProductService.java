@@ -18,7 +18,6 @@ import com.augusto.productsystemapi.dtos.product.ProductUpdateDto;
 import com.augusto.productsystemapi.exceptions.ProductException;
 import com.augusto.productsystemapi.model.Product;
 import com.augusto.productsystemapi.repository.ProductRepository;
-import com.augusto.productsystemapi.repository.StoreRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -29,8 +28,6 @@ public class ProductService {
     ObjectMapper objectMapper;
     @Autowired
     FileUploadServiceClient fileClient;
-    @Autowired
-    StoreRepository storeRepository;
 
     public ProductOutputDto createProduct(ProductInputDto productInput, MultipartFile file) {
         var newProduct = toProduct(productInput);
@@ -92,14 +89,14 @@ public class ProductService {
         product.setUpdatedDate(new ArrayList<String>());
         product.getUpdatedDate().add(LocalDateTime.now().toString());
         product.setCode(generateCode());
-        product.setStore(storeRepository.findByCnpj(productInput.cnpjOrigin())
-                .orElseThrow(() -> new RuntimeException()));
+        product.setCnpjOwner(productInput.cnpjOwner());
+        product.setDescription(productInput.description());
         return product;
     }
 
     protected ProductOutputDto toProductOutputDto(Product product) {
         return new ProductOutputDto(product.getName(), product.getAddedDate(),
                 product.getUpdatedDate(), product.getQuantity(), product.getCode(),
-                product.getPrice());
+                product.getPrice(), product.getCnpjOwner(), product.getDescription());
     }
 }
